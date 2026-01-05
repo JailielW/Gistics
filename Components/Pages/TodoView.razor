@@ -1,0 +1,53 @@
+﻿@page "/todos/view/{Id:guid}"
+@using Gistics.Models
+@inject Gistics.Services.ITodoService TodoService
+@inject NavigationManager Navigation
+
+<h3>Todo details</h3>
+
+@if (item == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">@item.Title</h5>
+            <h6 class="card-subtitle mb-2 text-muted">@item.CreatedAt.ToLocalTime().ToString("g")</h6>
+            <p class="card-text">@item.Description</p>
+            <p>
+                <strong>Completed:</strong>
+                @if (item.IsCompleted)
+                {
+                    <span class="badge bg-success">Yes</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">No</span>
+                }
+            </p>
+            <button class="btn btn-secondary" @onclick="Back">Back</button>
+            <button class="btn btn-outline-primary ms-2" @onclick="() => Edit(item.Id)">Edit</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private TodoItem? item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await TodoService.GetAsync(Id);
+        if (item == null)
+        {
+            Navigation.NavigateTo("/todos");
+        }
+    }
+
+    private void Back() => Navigation.NavigateTo("/todos");
+    private void Edit(Guid id) => Navigation.NavigateTo($"/todos/edit/{id}");
+}
