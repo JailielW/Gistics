@@ -18,6 +18,7 @@ namespace Gistics.Services
             return Task.FromResult(list);
         }
 
+        #region othermethods
         public Task<TodoItem?> GetAsync(Guid id)
         {
             _store.TryGetValue(id, out var item);
@@ -44,5 +45,6 @@ namespace Gistics.Services
         {
             return Task.FromResult(_store.TryRemove(id, out _));
         }
+        #endregion
     }
 }
