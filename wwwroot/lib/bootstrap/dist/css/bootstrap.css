@@ -3070,6 +3070,23 @@ textarea.form-control-lg {
   --bs-btn-disabled-border-color: #0d6efd;
 }
 
+.btn-go {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #1da811;
+    --bs-btn-border-color: #1da811;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #1da811;
+    --bs-btn-hover-border-color: #1da811;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #188a0e;
+    --bs-btn-active-border-color: #188a0e;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #569151;
+    --bs-btn-disabled-border-color: #569151;
+}
+
 .btn-secondary {
   --bs-btn-color: #fff;
   --bs-btn-bg: #6c757d;
@@ -3085,6 +3102,23 @@ textarea.form-control-lg {
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: #6c757d;
   --bs-btn-disabled-border-color: #6c757d;
+}
+
+.btn-third {
+    /* var(--bs-orange)*/
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--bs-orange);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #e67112;
+    --bs-btn-hover-border-color: #e67112;
+    --bs-btn-focus-shadow-rgb: 130, 138, 145;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #e67112;
+    --bs-btn-active-border-color: #e67112;
+    /*--bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--bs-orange);
+    --bs-btn-disabled-border-color: var(--bs-orange);*/
 }
 
 .btn-success {
@@ -3221,6 +3255,24 @@ textarea.form-control-lg {
   --bs-btn-disabled-bg: transparent;
   --bs-btn-disabled-border-color: #6c757d;
   --bs-gradient: none;
+}
+
+.btn-outline-third {
+    /*var(--bs-orange)*/
+    --bs-btn-color: var(--bs-orange);
+    --bs-btn-border-color: var(--bs-orange);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--bs-orange);
+    --bs-btn-hover-border-color: var(--bs-orange);
+    --bs-btn-focus-shadow-rgb: 108,117,125;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--bs-orange);
+    --bs-btn-active-border-color: var(--bs-orange);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: var(--bs-orange);
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: var(--bs-orange);
+    --bs-gradient: none
 }
 
 .btn-outline-success {

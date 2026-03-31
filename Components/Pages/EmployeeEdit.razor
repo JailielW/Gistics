@@ -1,0 +1,203 @@
+﻿@page "/EmployeeView/new"
+@page "/EmployeeView/edit/{Id:int}"
+@using System.ComponentModel.DataAnnotations
+@using Gistics.Components.Shared
+@using Gistics.Models
+@inject Gistics.Services.IDataService DataService
+@inject NavigationManager Navigation
+
+<h3>@(isNew ? "New Employee" : "Edit Employee")</h3>
+
+<EditForm Model="model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">First Name</label>
+        <InputText class="form-control" @bind-Value="model.FirstName" />
+        <ValidationMessage For="@(() => model.FirstName)" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Last Name</label>
+        <InputTextArea class="form-control" rows="4" @bind-Value="model.LastName" />
+        <ValidationMessage For="@(() => model.LastName)" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Badge Number</label>
+        <InputTextArea class="form-control" rows="4" @bind-Value="model.BadgeNumber" />
+        <ValidationMessage For="@(() => model.BadgeNumber)" />
+    </div>
+    
+    @if(!isNew)
+    {
+        <div class="mb-3">
+            <label class="form-label">Start Date</label>
+            <InputDate TValue="DateOnly" @bind-Value="model.StartDate" class="form-control" />
+            <ValidationMessage For="@(() => model.StartDate)" />
+        </div>
+ 
+        @if (model.EndDate != DateOnly.MinValue)
+        {
+            <div class="mb-3">
+                <label class="form-label">End Date</label>
+                <InputDate TValue="DateOnly" @bind-Value="model.EndDate" class="form-control" />
+                <ValidationMessage For="@(() => model.EndDate)" />
+            </div>
+        }
+    }
+    
+    <div class="mb-3">
+        <label class="form-label">Birth Date</label>
+        <InputDate TValue="DateOnly" @bind-Value="model.BirthDate" class="form-control" />
+        <ValidationMessage For="@(() => model.BirthDate)" />
+    </div>
+
+    <!-- New: Title dropdown -->
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <InputSelect class="form-select" @bind-Value="model.TitleID">
+            <option value="0">-- Select Title --</option>
+            @if (titles != null)
+            {
+                @foreach (var t in titles)
+                {
+                    <option value="@t.Id">@t.Name</option>
+                }
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => model.TitleID)" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Save</button>
+    <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
+    @if (model.EndDate == DateOnly.MinValue)
+    {
+        <button type="button" class="btn btn-outline-danger ms-2" @onclick="() => ConfirmDelete(model.EmpId)">Terminate</button>
+    }
+    else
+    {
+        <button type="button" class="btn btn-third ms-2" @onclick="() => ConfirmDelete(model.EmpId)">Reinstate</button>
+    }
+</EditForm>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "Id")]
+    public int Id { get; set; }
+
+    private Employees model = new Employees
+    {
+        FirstName = string.Empty,
+        LastName = string.Empty,
+        BadgeNumber = string.Empty,
+        StartDate = DateOnly.MinValue,
+        EndDate = DateOnly.MinValue,
+        BirthDate = DateOnly.FromDateTime(DateTime.Now),
+        Title = new EmployeeTitles { Name = string.Empty }
+    };
+
+    private bool isNew => Id == 0;
+    // Titles for dropdown
+    private List<EmployeeTitles> titles = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Load titles first so dropdown is available when model is loaded
+            titles = await DataService.GetTitlesAsync();
+
+            if (Id != 0)
+            {
+                var item = await DataService.GetEmployeeAsync(Id);
+                if (item != null)
+                {
+                    model = item;
+
+                    // Ensure TitleID is set from the loaded employee. If the stored employee
+                    // only has Title navigation populated, derive the ID by matching the name.
+                    if (model.TitleID != 0)
+                    {
+                        // already set
+                    }
+                    else if (model.Title != null && !string.IsNullOrEmpty(model.Title.Name))
+                    {
+                        var match = titles.FirstOrDefault(t => string.Equals(t.Name, model.Title.Name, StringComparison.OrdinalIgnoreCase));
+                        if (match != null)
+                            model.TitleID = match.Id;
+                    }
+                }
+                else
+                {
+                    // Not found: navigate back to list
+                    Navigation.NavigateTo("/EmployeesView");
+                }
+            }
+            else
+            {
+                // New employee: optionally default to first title (or keep 0 to require selection)
+                if (titles.Any())
+                {
+                    model.TitleID = titles.First().Id;
+                }
+            }
+
+            // If you changed model after async calls, ensure the UI updates
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"EmployeeEdit.OnInitializedAsync error: {ex}");
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            if (isNew)
+            {
+                await DataService.Insert_EmployeeAsync(model.FirstName, model.LastName, model.BadgeNumber, 
+                    model.TitleID, model.BirthDate);
+            }
+            else
+            {
+                await DataService.UpdateAsync(model.EmpId, model.FirstName, model.LastName, model.BadgeNumber, 
+                    model.TitleID, model.BirthDate, model.StartDate, model.EndDate);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"EmployeeEdit.HandleValidSubmit error: {ex}");
+        }
+
+        Navigation.NavigateTo("/EmployeesView");
+    }
+
+    private void Cancel() => Navigation.NavigateTo("/EmployeesView");
+
+    private async Task ConfirmDelete(int id)
+    {
+        try
+        {
+            var EmpTerminatedbool = await DataService.TerminateEmployeeAsync(Id);
+            if (!EmpTerminatedbool)
+            {
+                Navigation.NavigateTo("/EmployeesView");
+            }
+            else
+            {
+                throw new Exception("Failed to terminate employee.");
+            }
+            
+            // If you changed model after async calls, ensure the UI updates
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"EmployeeEdit.ConfirmDelete error: {ex}");
+        }
+    }
+}

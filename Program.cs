@@ -7,8 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Register Todo service for CRUD operations (in-memory implementation)
-builder.Services.AddSingleton<ITodoService, TodoService>();
+// Register Data service for CRUD operations
+builder.Services.AddSingleton<IDataService, DataService>();
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.HttpOnly = true;
+});
 
 var app = builder.Build();
 
@@ -19,6 +26,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 

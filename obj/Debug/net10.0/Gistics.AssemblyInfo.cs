@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Gistics")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d833ad12a311e6b9ae81042ad61bc25e8acb09eb")]
 [assembly: System.Reflection.AssemblyProductAttribute("Gistics")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Gistics")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
